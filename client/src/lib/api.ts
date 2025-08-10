@@ -1,5 +1,5 @@
 // API client to replace Supabase calls
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 interface ApiResponse<T> {
   data?: T;
@@ -63,6 +63,13 @@ export class ApiClient {
 
   async updateDoctor(userId: string, updates: any) {
     return this.request<any>(`/doctors/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  async updateDoctorAvailability(doctorId: string, updates: { availability: any; leaveDays: string[] }) {
+    return this.request<any>(`/doctors/${doctorId}/availability`, {
       method: 'PUT',
       body: JSON.stringify(updates),
     });

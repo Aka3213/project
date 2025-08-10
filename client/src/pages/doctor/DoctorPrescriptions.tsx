@@ -55,6 +55,7 @@ const DoctorPrescriptions: React.FC = () => {
       setShowCreateForm(false);
       setFormData({ medications: '', instructions: '' });
       setSelectedAppointment('');
+      alert('Prescription created successfully!');
     } else {
       alert('Failed to create prescription. Please try again.');
     }

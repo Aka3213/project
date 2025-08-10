@@ -32,12 +32,12 @@ const AdminPatientManagement: React.FC = () => {
       ]);
 
       // Count appointments for each patient
-      const countMap = appointmentsData?.reduce((acc, apt) => {
+      const countMap = (appointmentsData || []).reduce((acc, apt) => {
         acc[apt.patientId] = (acc[apt.patientId] || 0) + 1;
         return acc;
-      }, {} as Record<string, number>) || {};
+      }, {} as Record<string, number>);
 
-      const mappedPatients = patientsData?.map(patient => ({
+      const mappedPatients = (patientsData || []).map(patient => ({
         id: patient.id,
         name: patient.user.name,
         email: patient.user.email,
@@ -46,11 +46,12 @@ const AdminPatientManagement: React.FC = () => {
         address: patient.address || '',
         createdAt: patient.createdAt,
         appointmentCount: countMap[patient.userId] || 0
-      })) || [];
+      }));
 
       setPatients(mappedPatients);
     } catch (error) {
       console.error('Error fetching patients:', error);
+      setPatients([]);
     } finally {
       setLoading(false);
     }

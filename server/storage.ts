@@ -72,29 +72,39 @@ export class DatabaseStorage implements IStorage {
 
   // Doctor operations
   async getDoctors(): Promise<(Doctor & { user: User })[]> {
-    const result = await db.select()
-      .from(doctors)
-      .innerJoin(users, eq(doctors.userId, users.id));
-    
-    return result.map(row => ({
-      ...row.doctors,
-      user: row.users
-    }));
+    try {
+      const result = await db.select()
+        .from(doctors)
+        .innerJoin(users, eq(doctors.userId, users.id));
+      
+      return result.map(row => ({
+        ...row.doctors,
+        user: row.users
+      }));
+    } catch (error) {
+      console.error('Error fetching doctors:', error);
+      return [];
+    }
   }
 
   async getDoctor(userId: string): Promise<(Doctor & { user: User }) | undefined> {
-    const result = await db.select()
-      .from(doctors)
-      .innerJoin(users, eq(doctors.userId, users.id))
-      .where(eq(doctors.userId, userId))
-      .limit(1);
-    
-    if (result.length === 0) return undefined;
-    
-    return {
-      ...result[0].doctors,
-      user: result[0].users
-    };
+    try {
+      const result = await db.select()
+        .from(doctors)
+        .innerJoin(users, eq(doctors.userId, users.id))
+        .where(eq(doctors.userId, userId))
+        .limit(1);
+      
+      if (result.length === 0) return undefined;
+      
+      return {
+        ...result[0].doctors,
+        user: result[0].users
+      };
+    } catch (error) {
+      console.error('Error fetching doctor:', error);
+      return undefined;
+    }
   }
 
   async createDoctor(doctor: InsertDoctor): Promise<Doctor> {
@@ -109,14 +119,19 @@ export class DatabaseStorage implements IStorage {
 
   // Patient operations
   async getPatients(): Promise<(Patient & { user: User })[]> {
-    const result = await db.select()
-      .from(patients)
-      .innerJoin(users, eq(patients.userId, users.id));
-    
-    return result.map(row => ({
-      ...row.patients,
-      user: row.users
-    }));
+    try {
+      const result = await db.select()
+        .from(patients)
+        .innerJoin(users, eq(patients.userId, users.id));
+      
+      return result.map(row => ({
+        ...row.patients,
+        user: row.users
+      }));
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+      return [];
+    }
   }
 
   async getPatient(userId: string): Promise<(Patient & { user: User }) | undefined> {
@@ -146,18 +161,33 @@ export class DatabaseStorage implements IStorage {
 
   // Appointment operations
   async getAppointments(): Promise<Appointment[]> {
-    const result = await db.select().from(appointments);
-    return result;
+    try {
+      const result = await db.select().from(appointments);
+      return result;
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      return [];
+    }
   }
 
   async getAppointmentsByPatient(patientId: string): Promise<Appointment[]> {
-    const result = await db.select().from(appointments).where(eq(appointments.patientId, patientId));
-    return result;
+    try {
+      const result = await db.select().from(appointments).where(eq(appointments.patientId, patientId));
+      return result;
+    } catch (error) {
+      console.error('Error fetching patient appointments:', error);
+      return [];
+    }
   }
 
   async getAppointmentsByDoctor(doctorId: string): Promise<Appointment[]> {
-    const result = await db.select().from(appointments).where(eq(appointments.doctorId, doctorId));
-    return result;
+    try {
+      const result = await db.select().from(appointments).where(eq(appointments.doctorId, doctorId));
+      return result;
+    } catch (error) {
+      console.error('Error fetching doctor appointments:', error);
+      return [];
+    }
   }
 
   async createAppointment(appointment: InsertAppointment): Promise<Appointment> {
@@ -175,18 +205,33 @@ export class DatabaseStorage implements IStorage {
 
   // Prescription operations
   async getPrescriptions(): Promise<Prescription[]> {
-    const result = await db.select().from(prescriptions);
-    return result;
+    try {
+      const result = await db.select().from(prescriptions);
+      return result;
+    } catch (error) {
+      console.error('Error fetching prescriptions:', error);
+      return [];
+    }
   }
 
   async getPrescriptionsByPatient(patientId: string): Promise<Prescription[]> {
-    const result = await db.select().from(prescriptions).where(eq(prescriptions.patientId, patientId));
-    return result;
+    try {
+      const result = await db.select().from(prescriptions).where(eq(prescriptions.patientId, patientId));
+      return result;
+    } catch (error) {
+      console.error('Error fetching patient prescriptions:', error);
+      return [];
+    }
   }
 
   async getPrescriptionsByDoctor(doctorId: string): Promise<Prescription[]> {
-    const result = await db.select().from(prescriptions).where(eq(prescriptions.doctorId, doctorId));
-    return result;
+    try {
+      const result = await db.select().from(prescriptions).where(eq(prescriptions.doctorId, doctorId));
+      return result;
+    } catch (error) {
+      console.error('Error fetching doctor prescriptions:', error);
+      return [];
+    }
   }
 
   async createPrescription(prescription: InsertPrescription): Promise<Prescription> {

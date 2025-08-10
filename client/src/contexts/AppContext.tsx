@@ -93,7 +93,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     try {
       const data = await apiClient.getDoctors();
       
-      const doctorsData = data?.map(doc => ({
+      const doctorsData = (data || []).map(doc => ({
         id: doc.id,
         userId: doc.userId,
         name: doc.user.name,
@@ -105,11 +105,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         leaveDays: doc.leaveDays || [],
         isActive: doc.isActive,
         createdAt: doc.createdAt
-      })) || [];
+      }));
 
       setDoctors(doctorsData);
     } catch (error) {
       console.error('Error fetching doctors:', error);
+      setDoctors([]);
     }
   };
 
@@ -119,7 +120,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       
       // For now, use simplified appointment data
       // In a real implementation, we'd need to join with user data
-      const appointmentsData = data?.map(apt => ({
+      const appointmentsData = (data || []).map(apt => ({
         id: apt.id,
         patientId: apt.patientId,
         doctorId: apt.doctorId,
@@ -131,11 +132,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         status: apt.status,
         reason: apt.reason,
         createdAt: apt.createdAt
-      })) || [];
+      }));
 
       setAppointments(appointmentsData);
     } catch (error) {
       console.error('Error fetching appointments:', error);
+      setAppointments([]);
     }
   };
 
@@ -145,7 +147,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       
       // For now, use simplified prescription data
       // In a real implementation, we'd need to join with user data
-      const prescriptionsData = data?.map(presc => ({
+      const prescriptionsData = (data || []).map(presc => ({
         id: presc.id,
         appointmentId: presc.appointmentId,
         patientId: presc.patientId,
@@ -155,11 +157,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         medications: presc.medications,
         instructions: presc.instructions,
         createdAt: presc.createdAt
-      })) || [];
+      }));
 
       setPrescriptions(prescriptionsData);
     } catch (error) {
       console.error('Error fetching prescriptions:', error);
+      setPrescriptions([]);
     }
   };
 
@@ -220,7 +223,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const updateDoctorAvailability = async (doctorId: string, availability: any, leaveDays: string[]): Promise<boolean> => {
     try {
-      await apiClient.updateDoctorAvailability(doctorId, {
+      await apiClient.updateDoctor(doctorId, {
         availability,
         leaveDays
       });

@@ -199,6 +199,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put("/api/doctors/:userId/availability", async (req, res) => {
+    try {
+      const doctor = await storage.updateDoctor(req.params.userId, req.body);
+      if (!doctor) {
+        res.status(404).json({ message: 'Doctor not found' });
+        return;
+      }
+      res.json(doctor);
+    } catch (error) {
+      console.error('Update doctor availability error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
   // Patient routes
   app.get("/api/patients", async (req, res) => {
     try {

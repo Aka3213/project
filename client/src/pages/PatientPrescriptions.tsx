@@ -3,7 +3,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useApp } from '../contexts/AppContext';
 import { FileText, Download, Calendar, User, Search } from 'lucide-react';
 import { format } from 'date-fns';
-import jsPDF from 'jspdf';
 
 const PatientPrescriptions: React.FC = () => {
   const { user } = useAuth();
@@ -22,58 +21,33 @@ const PatientPrescriptions: React.FC = () => {
   );
 
   const downloadPrescriptionPDF = (prescription: any) => {
-    const doc = new jsPDF();
+    // Create a simple text-based download for now
+    const content = `
+PRESCRIPTION
+
+Patient Information:
+Name: ${prescription.patientName}
+Date: ${format(new Date(prescription.createdAt), 'MMMM dd, yyyy')}
+
+Prescribed by:
+Dr. ${prescription.doctorName}
+
+Medications:
+${prescription.medications}
+
+Instructions:
+${prescription.instructions}
+    `;
     
-    // Header
-    doc.setFontSize(20);
-    doc.text('PRESCRIPTION', 105, 20, { align: 'center' });
-    
-    // Patient Info
-    doc.setFontSize(12);
-    doc.text('Patient Information:', 20, 40);
-    doc.text(`Name: ${prescription.patientName}`, 20, 50);
-    doc.text(`Date: ${format(new Date(prescription.createdAt), 'MMMM dd, yyyy')}`, 20, 60);
-    
-    // Doctor Info
-    doc.text('Prescribed by:', 20, 80);
-    doc.text(`Dr. ${prescription.doctorName}`, 20, 90);
-    
-    // Medications
-    doc.text('Medications:', 20, 110);
-    
-    const medications = prescription.medications.split('\n');
-    let yPosition = 120;
-    medications.forEach((med: string) => {
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
-      doc.text(med, 20, yPosition);
-      yPosition += 10;
-    });
-    
-    // Instructions
-    if (prescription.instructions) {
-      yPosition += 10;
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
-      doc.text('Instructions:', 20, yPosition);
-      yPosition += 10;
-      
-      const instructions = prescription.instructions.split('\n');
-      instructions.forEach((instruction: string) => {
-        if (yPosition > 270) {
-          doc.addPage();
-          yPosition = 20;
-        }
-        doc.text(instruction, 20, yPosition);
-        yPosition += 10;
-      });
-    }
-    
-    doc.save(`prescription-${prescription.id}.pdf`);
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prescription-${prescription.id}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
